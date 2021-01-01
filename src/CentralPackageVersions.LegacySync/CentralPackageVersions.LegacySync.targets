@@ -1,0 +1,64 @@
+﻿<Project>
+
+  <PropertyGroup>
+
+    <SyncPackageVersionsTaskAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)netcoreapp2.1\CentralPackageVersions.LegacySync.dll</SyncPackageVersionsTaskAssemblyFile>
+    <SyncPackageVersionsTaskAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)net461\CentralPackageVersions.LegacySync.dll</SyncPackageVersionsTaskAssemblyFile>
+
+    <SyncPackageVersionsMinCoreVersionRequired>2.1</SyncPackageVersionsMinCoreVersionRequired>
+    
+    <!-- Our default CLI version for error checking purposes -->
+    <SyncPackageVersionsNetCoreAppVersion>$(BundledNETCoreAppTargetFrameworkVersion)</SyncPackageVersionsNetCoreAppVersion>
+    <SyncPackageVersionsNetCoreAppVersion Condition="'$(SyncPackageVersionsNetCoreAppVersion)' == ''">1.0</SyncPackageVersionsNetCoreAppVersion>
+
+
+  
+</PropertyGroup>
+
+  <UsingTask TaskName="CentralPackageVersions.LegacySync.SyncPackageVersions" AssemblyFile="$(StrongNamerTaskAssemblyFile)" />
+
+  <Target Name="SyncPackageVersionsTarget"
+          AfterTargets="AfterResolveReferences"
+          Condition="'$(DisableSyncPackageVersions)' != 'true'">
+
+    <Error Condition="'$(MSBuildRuntimeType)' == 'Core' and '$(SyncPackageVersionsMinCoreVersionRequired)' > '$(SyncPackageVersionsNetCoreAppVersion)' "
+           Text="SyncPackageVersions requires at least the .NET Core SDK v2.1 to run with 'dotnet build'"
+           ContinueOnError="false"
+           />
+
+    <PropertyGroup>
+      <!--
+        Walk up the directory tree looking for a Packages.props, unless a user has already specified a path.
+      -->
+      <CentralPackagesFile Condition=" '$(CentralPackagesFile)' == '' ">$([MSBuild]::GetPathOfFileAbove('Packages.props', $(MSBuildProjectDirectory)))</CentralPackagesFile>
+
+      <ProjectPackagesFile>$(MSBuildProjectDirectory)packages.config</ProjectPackagesFile>
+
+    </PropertyGroup>
+
+    <StrongNamer.AddStrongName
+          CentralPackagesFile="$(CentralPackagesFile)"
+          CopyLocalFiles="@(ReferenceCopyLocalPaths)"
+          SignedAssemblyFolder="$(IntermediateOutputPath)SignedAssemblies"
+          KeyFile="$(StrongNamerKeyFile)">
+
+      <Output TaskParameter="SignedAssembliesToReference" ItemName="AssembliesToReference" />
+      <Output TaskParameter="NewCopyLocalFiles" ItemName="NewCopyLocalFiles" />
+
+    </StrongNamer.AddStrongName>
+
+    <ItemGroup>
+      <ReferencePath Remove="@(ReferencePath)" />
+      <ReferencePath Include="@(AssembliesToReference)" />
+
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" />
+      <ReferenceCopyLocalPaths Include="@(NewCopyLocalFiles)" />
+    </ItemGroup>
+
+  </Target>
+
+  <PropertyGroup>
+    <ResolveReferencesDependsOn>$(ResolveReferencesDependsOn);SyncPackageVersionsTarget</ResolveReferencesDependsOn>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Roberto Sanz</Authors>
+    <Title>Central Package Versions synced on ASP.NET legacy projects</Title>
+    <PackageProjectUrl>https://github.com/rsciriano/CentralPackageVersions.LegacySync</PackageProjectUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <RepositoryType></RepositoryType>
+    <PackageTags>nuget central package versions asp.net legacy</PackageTags>
+    <Description>Central Package Versions synced on ASP.NET legacy projects</Description>
+    <PackageSummary>Central Package Versions synced on ASP.NET legacy projects</PackageSummary>
+
+    <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    
+    <NugetCliVersion>5.8.0</NugetCliVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Condition="'$(TargetFramework)' == 'net461' " Include="Microsoft.Build.Tasks.Core" Version="14.3" PrivateAssets="all" />
+    <PackageReference Condition="'$(TargetFramework)' == 'netcoreapp2.1' " Include="Microsoft.Build.Tasks.Core" Version="15.1.548" PrivateAssets="all" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.26" PrivateAssets="all" />
+    <PackageReference Include="NuGet.CommandLine" Version="$(NugetCliVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="CentralPackageVersions.LegacySync.targets" Pack="true" PackagePath="build" />
+    <None Include="$(NuGetPackageRoot)nuget.commandline\$(NugetCliVersion)\tools\Nuget.exe" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="tools" Visible="false" />
+  </ItemGroup>  
+  
+</Project>

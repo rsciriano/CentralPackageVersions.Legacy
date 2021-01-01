@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net452</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" />
+    <PackageReference Include="MediatR"  />
+    <PackageReference Include="Microsoft.Net.Http" />
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+</Project>
