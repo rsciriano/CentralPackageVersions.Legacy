@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Roberto Sanz</Authors>
+    <Title>Central Package Versions for ASP.NET legacy projects</Title>
+    <PackageProjectUrl>https://github.com/rsciriano/CentralPackageVersions.LegacySync</PackageProjectUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <RepositoryType></RepositoryType>
+    <PackageTags>nuget central package versions asp.net legacy</PackageTags>
+    <Description>Central Package Versions for ASP.NET legacy projects</Description>
+    <PackageSummary>Central Package Versions for ASP.NET legacy projects</PackageSummary>
+    <IsPackable>true</IsPackable>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    
+    <PublicRelease Condition="'$(PublicRelease)' == '' and '$(Configuration)' == 'Debug'">false</PublicRelease>
+    <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    
+    <NugetCliVersion>5.8.0</NugetCliVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="14.3.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="14.3.0" PrivateAssets="all" />
+
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.26" PrivateAssets="all" />
+    <PackageReference Include="NuGet.CommandLine" Version="$(NugetCliVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="CentralPackageVersions.Legacy.targets" Pack="true" PackagePath="build" />
+  </ItemGroup>
+    <ItemGroup>
+    <None Include="$(NuGetPackageRoot)nuget.commandline\$(NugetCliVersion)\tools\NuGet.exe" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="tools" Visible="false" />
+  </ItemGroup>  
+  
+</Project>

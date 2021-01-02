@@ -1,0 +1,58 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+
+    <SyncPackageVersionsTaskAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)netcoreapp2.1\CentralPackageVersions.Legacy.dll</SyncPackageVersionsTaskAssemblyFile>
+    <SyncPackageVersionsTaskAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)net45\CentralPackageVersions.Legacy.dll</SyncPackageVersionsTaskAssemblyFile>
+
+    <SyncPackageVersionsMinCoreVersionRequired>2.1</SyncPackageVersionsMinCoreVersionRequired>
+    
+    <!-- Our default CLI version for error checking purposes -->
+    <SyncPackageVersionsNetCoreAppVersion>$(BundledNETCoreAppTargetFrameworkVersion)</SyncPackageVersionsNetCoreAppVersion>
+    <SyncPackageVersionsNetCoreAppVersion Condition="'$(SyncPackageVersionsNetCoreAppVersion)' == ''">1.0</SyncPackageVersionsNetCoreAppVersion>
+
+
+  
+</PropertyGroup>
+
+  <UsingTask TaskName="CentralPackageVersions.Legacy.SyncPackageVersionsTask" AssemblyFile="$(SyncPackageVersionsTaskAssemblyFile)" />
+
+  <Target Name="SyncPackageVersionsTarget"
+          AfterTargets="AfterResolveReferences"
+          Condition="'$(DisableSyncPackageVersions)' != 'true'">
+
+    <Error Condition="'$(MSBuildRuntimeType)' == 'Core' and '$(SyncPackageVersionsMinCoreVersionRequired)' > '$(SyncPackageVersionsNetCoreAppVersion)' "
+           Text="SyncPackageVersions requires at least the .NET Core SDK v2.1 to run with 'dotnet build'"
+           ContinueOnError="false"
+           />
+
+    <PropertyGroup>
+      <!--
+        Walk up the directory tree looking for a Packages.props, unless a user has already specified a path.
+      -->
+      <CentralPackagesFile Condition=" '$(CentralPackagesFile)' == '' ">Packages.props</CentralPackagesFile>
+
+      <ProjectPackagesFile>$(MSBuildProjectDirectory)\packages.config</ProjectPackagesFile>
+
+    </PropertyGroup>
+
+    <CentralPackageVersions.Legacy.SyncPackageVersionsTask
+          CentralPackagesFile="$(CentralPackagesFile)"
+          ProjectPackagesFile="$(ProjectPackagesFile)">
+
+      <Output TaskParameter="PackagesToSync" ItemName="PackagesToSync" />
+
+    </CentralPackageVersions.Legacy.SyncPackageVersionsTask>
+
+    <Exec 
+      Condition="'@(PackagesToSync)' != ''"
+      Command="nuget.exe update $(MSBuildProjectDirectory)\$(MSBuildProjectFile) -Id %(PackagesToSync.Identity) -Version %(PackagesToSync.Version) -Verbosity normal" 
+      />
+    
+  </Target>
+
+  <PropertyGroup>
+    <ResolveReferencesDependsOn>$(ResolveReferencesDependsOn);SyncPackageVersionsTarget</ResolveReferencesDependsOn>
+  </PropertyGroup>
+
+</Project>
