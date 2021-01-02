@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Roberto Sanz</Authors>
     <Title>Central Package Versions for ASP.NET legacy projects</Title>
-    <PackageProjectUrl>https://github.com/rsciriano/CentralPackageVersions.LegacySync</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/rsciriano/CentralPackageVersions.Legacy</PackageProjectUrl>
     <RepositoryUrl></RepositoryUrl>
     <RepositoryType></RepositoryType>
     <PackageTags>nuget central package versions asp.net legacy</PackageTags>
@@ -14,7 +14,7 @@
     <IsPackable>true</IsPackable>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     
-    <PublicRelease Condition="'$(PublicRelease)' == '' and '$(Configuration)' == 'Debug'">false</PublicRelease>
+    <PublicRelease Condition="'$(PublicRelease)' == ''">false</PublicRelease>
     <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
     
